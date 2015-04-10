@@ -101,6 +101,11 @@ type IpAdapterAddresses struct {
 	/* more fields might be present here. */
 }
 
+type WSANetworkEvents struct {
+	NetworkEvents int32
+	ErrorCode     [10]int32
+}
+
 const (
 	IfOperStatusUp             = 1
 	IfOperStatusDown           = 2
@@ -292,3 +297,15 @@ const (
 func LoadGetFinalPathNameByHandle() error {
 	return procGetFinalPathNameByHandleW.Find()
 }
+
+const (
+	SO_TYPE = 0x1008
+)
+
+const (
+	HANDLE_FLAG_INHERIT            = 0x01
+	HANDLE_FLAG_PROTECT_FROM_CLOSE = 0x02
+)
+
+//sys	WSAEnumNetworkEvents(handle syscall.Handle, event syscall.Handle, events *WSANetworkEvents) (err error) [failretval==socket_error] = ws2_32.WSAEnumNetworkEvents
+//sys	GetHandleInformation(handle syscall.Handle, flags *uint32) (err error) = GetHandleInformation

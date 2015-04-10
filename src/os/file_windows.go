@@ -21,6 +21,9 @@ type file struct {
 	pfd     poll.FD
 	name    string
 	dirinfo *dirInfo // nil unless directory being read
+
+	// for asynchronized
+	isSocket bool
 }
 
 // Fd returns the Windows handle referencing the open file.

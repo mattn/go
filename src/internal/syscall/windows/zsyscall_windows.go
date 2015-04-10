@@ -66,6 +66,9 @@ var (
 	procGetProfilesDirectoryW     = moduserenv.NewProc("GetProfilesDirectoryW")
 	procNetUserGetLocalGroups     = modnetapi32.NewProc("NetUserGetLocalGroups")
 	procGetProcessMemoryInfo      = modpsapi.NewProc("GetProcessMemoryInfo")
+
+	procWSAEnumNetworkEvents = modws2_32.NewProc("WSAEnumNetworkEvents")
+	procGetHandleInformation = modkernel32.NewProc("GetHandleInformation")
 )
 
 func GetAdaptersAddresses(family uint32, flags uint32, reserved uintptr, adapterAddresses *IpAdapterAddresses, sizePointer *uint32) (errcode error) {
@@ -315,6 +318,30 @@ func GetProcessMemoryInfo(handle syscall.Handle, memCounters *PROCESS_MEMORY_COU
 	if r1 == 0 {
 		if e1 != 0 {
 			err = errnoErr(e1)
+		} else {
+			err = syscall.EINVAL
+		}
+	}
+	return
+}
+
+func WSAEnumNetworkEvents(handle syscall.Handle, event syscall.Handle, events *WSANetworkEvents) (err error) {
+	r1, _, e1 := syscall.Syscall(procWSAEnumNetworkEvents.Addr(), 3, uintptr(handle), uintptr(event), uintptr(unsafe.Pointer(events)))
+	if r1 == socket_error {
+		if e1 != 0 {
+			err = error(e1)
+		} else {
+			err = syscall.EINVAL
+		}
+	}
+	return
+}
+
+func GetHandleInformation(handle syscall.Handle, flags *uint32) (err error) {
+	r1, _, e1 := syscall.Syscall(procGetHandleInformation.Addr(), 2, uintptr(handle), uintptr(unsafe.Pointer(flags)), 0)
+	if r1 == 0 {
+		if e1 != 0 {
+			err = error(e1)
 		} else {
 			err = syscall.EINVAL
 		}

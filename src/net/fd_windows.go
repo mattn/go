@@ -35,6 +35,7 @@ type netFD struct {
 	net         string
 	laddr       Addr
 	raddr       Addr
+	isFile      bool
 }
 
 func newFD(sysfd syscall.Handle, family, sotype int, net string) (*netFD, error) {
@@ -206,6 +207,7 @@ func (fd *netFD) accept() (*netFD, error) {
 		poll.CloseFunc(s)
 		return nil, err
 	}
+	netfd.isFile = fd.isFile
 	if err := netfd.init(); err != nil {
 		fd.Close()
 		return nil, err
@@ -238,6 +240,24 @@ func (fd *netFD) writeMsg(p []byte, oob []byte, sa syscall.Sockaddr) (n int, oob
 // Unimplemented functions.
 
 func (fd *netFD) dup() (*os.File, error) {
-	// TODO: Implement this
-	return nil, syscall.EWINDOWS
+	var s syscall.Handle
+	p, _ := syscall.GetCurrentProcess()
+	err := syscall.DuplicateHandle(p, syscall.Handle(fd.pfd.Sysfd), p, &s, 0, true, syscall.DUPLICATE_SAME_ACCESS)
+	if err != nil {
+		return nil, os.NewSyscallError("duplicatehandle", err)
+	}
+	return os.NewFile(uintptr(s), fd.name()), nil
+}
+
+// Unimplemented functions.
+
+func (fd *netFD) name() string {
+	var ls, rs string
+	if fd.laddr != nil {
+		ls = fd.laddr.String()
+	}
+	if fd.raddr != nil {
+		rs = fd.raddr.String()
+	}
+	return fd.net + ":" + ls + "->" + rs
 }
