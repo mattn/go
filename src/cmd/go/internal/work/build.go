@@ -347,7 +347,8 @@ func BuildModeInit() {
 			codegenArg = "-fPIC"
 		} else {
 			switch platform {
-			case "linux/386", "linux/amd64", "linux/arm", "linux/arm64", "linux/ppc64le", "linux/s390x":
+			case "linux/386", "linux/amd64", "linux/arm", "linux/arm64", "linux/ppc64le", "linux/s390x",
+				"windows/amd64", "windows/386":
 			default:
 				base.Fatalf("-buildmode=shared not supported on %s\n", platform)
 			}
@@ -364,7 +365,8 @@ func BuildModeInit() {
 		} else {
 			switch platform {
 			case "linux/amd64", "linux/arm", "linux/arm64", "linux/386", "linux/s390x", "linux/ppc64le",
-				"android/amd64", "android/arm", "android/arm64", "android/386":
+				"android/amd64", "android/arm", "android/arm64", "android/386",
+				"windows/amd64", "windows/386":
 			case "darwin/amd64":
 				// Skip DWARF generation due to #21647
 				cfg.BuildLdflags = append(cfg.BuildLdflags, "-w")
@@ -383,7 +385,8 @@ func BuildModeInit() {
 			codegenArg = "-fPIC"
 		} else {
 			switch platform {
-			case "linux/386", "linux/amd64", "linux/arm", "linux/arm64", "linux/ppc64le", "linux/s390x":
+			case "linux/386", "linux/amd64", "linux/arm", "linux/arm64", "linux/ppc64le", "linux/s390x",
+				"windows/amd64", "windows/386":
 				buildAsmflags = append(buildAsmflags, "-D=GOBUILDMODE_shared=1")
 			default:
 				base.Fatalf("-linkshared not supported on %s\n", platform)

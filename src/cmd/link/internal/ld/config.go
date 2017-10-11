@@ -77,6 +77,12 @@ func (mode *BuildMode) Set(s string) error {
 			default:
 				return badmode()
 			}
+		case "windows":
+			switch objabi.GOARCH {
+			case "amd64":
+			default:
+				return badmode()
+			}
 		default:
 			return badmode()
 		}
@@ -86,6 +92,12 @@ func (mode *BuildMode) Set(s string) error {
 		case "linux":
 			switch objabi.GOARCH {
 			case "386", "amd64", "arm", "arm64", "s390x", "ppc64le":
+			default:
+				return badmode()
+			}
+		case "windows":
+			switch objabi.GOARCH {
+			case "amd64":
 			default:
 				return badmode()
 			}
