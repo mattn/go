@@ -2017,8 +2017,10 @@ func (ctxt *Link) address() {
 	if ctxt.BuildMode == BuildModeShared {
 		s := ctxt.Syms.Lookup("go.link.abihashbytes", 0)
 		sectSym := ctxt.Syms.Lookup(".note.go.abihash", 0)
-		s.Sect = sectSym.Sect
-		s.Value = int64(sectSym.Sect.Vaddr + 16)
+		if sectSym.Sect != nil {
+			s.Sect = sectSym.Sect
+			s.Value = int64(sectSym.Sect.Vaddr + 16)
+		}
 	}
 
 	ctxt.xdefine("runtime.text", sym.STEXT, int64(text.Vaddr))
